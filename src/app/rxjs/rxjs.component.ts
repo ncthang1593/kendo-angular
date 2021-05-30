@@ -1,6 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { from, interval, of } from 'rxjs';
-import { filter, map, mergeAll, switchAll, tap } from 'rxjs/operators';
+import {
+  debounceTime,
+  filter,
+  map,
+  mergeAll,
+  startWith,
+  switchAll,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { DataService } from '../data.service';
 
 @Component({
@@ -10,26 +20,22 @@ import { DataService } from '../data.service';
 })
 export class RxjsComponent implements OnInit {
   dataRender = [];
+  queryControl = new FormControl();
+  loading: boolean = true;
+  users: any[] = [];
+
   constructor(private _dataService: DataService) {}
 
   ngOnInit(): void {
-    this._dataService.getUsers().subscribe((data: any) => {
-      this.dataRender = data;
-      console.log(data);
-    });
-
-    interval(1000).pipe(
-      map((val) => {
-        return of(val);
-      }),
-      switchAll()
-    );
-    // .subscribe(console.log);
-  }
-
-  handleFilter(e) {
-    let valueSearch = e.value;
-    console.log(valueSearch);
-    // e.value = '';
+    this.queryControl.valueChanges
+      .pipe(
+        debounceTime(500),
+        switchMap((query) => {
+          return this._dataService.getUsers(query);
+        })
+      )
+      .subscribe((data) => {
+        return (this.users = data);
+      });
   }
 }

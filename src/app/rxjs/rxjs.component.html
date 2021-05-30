@@ -1,16 +1,10 @@
-<form autocomplete="off">
-  <div class="form-group">
-    <label for="exampleInputEmail1">Search here</label>
-    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-      (keydown)="handleFilter($event.target)" (keydown.enter)="$event.preventDefault()">
-  </div>
-  <button type="" class="btn btn-primary">Submit</button>
-</form>
-<div>
-  <hr>
-  <ul>
-    <li *ngFor="let value of dataRender">
-      {{value.id}} | {{value.name}} | {{value.email}}
-    </li>
-  </ul>
-</div>
+<input type="text" class="form-control" [formControl]="queryControl">
+<button type="" class="btn btn-primary">Submit</button>
+
+<ul>
+  <li *ngFor="let user of users">
+    <span>
+      {{user | json}}
+    </span>
+  </li>
+</ul>
